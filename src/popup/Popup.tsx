@@ -1,11 +1,13 @@
 import React from 'react';
 import CheckResult from 'components/CheckResult';
 import browser, { Tabs } from 'webextension-polyfill';
+import Scroller from 'components/ScriptsFetcher';
 import jsSHA from "jssha";
 
 
 // Scripts to execute in current tab
-const readScript = 'Array.from(document.scripts).map(script => script.src);';
+//const readScript = 'Array.from(document.scripts).map(script => script.src);';
+function readScript() { return Array.from(document.scripts).map(script => script.src); }
 
 const vulnerableSHA: String[] =
     ['13bcbda5ab4799c9700037e100c027d30a9e6e44',]
@@ -27,7 +29,7 @@ async function calculateAndCompareSHA1(fileUrl: string, expectedSHA1: String[]):
  * Executes a string of Javascript on the current tab
  * @param code - The string of code to execute on the current tab
  */
-async function fetchAndCheck(code: string): Promise<boolean> {
+async function fetchAndCheck(): Promise<boolean> {
     // Query for the active tab in the current window
     try {
         const tabs: Tabs.Tab[] = await browser.tabs.query({
@@ -36,18 +38,17 @@ async function fetchAndCheck(code: string): Promise<boolean> {
         });
 
         const currentTab: Tabs.Tab | undefined = tabs[0];
-
         if (!currentTab) {
             return false;
         }
-
-        const scriptsUsed = await browser.tabs.executeScript(currentTab.id, {
-            code,
-        }) as string[][];
-
-        for (let i = 0; i < scriptsUsed[0].length; i++) {
-            if (scriptsUsed[0][i] === '' && !scriptsUsed[0][i].endsWith('.js')) continue;
-            const isVulnerable = await calculateAndCompareSHA1(scriptsUsed[0][i], vulnerableSHA);
+        const scriptsUsed = await browser.scripting.executeScript({
+            target : {tabId : currentTab.id?currentTab.id:1},
+            func : readScript,
+          });
+        console.log(scriptsUsed[0].result);
+        for (let i = 0; i < scriptsUsed[0].result.length; i++) {
+            if (scriptsUsed[0].result[i] === '' && !scriptsUsed[0].result[i].endsWith('.js')) continue;
+            const isVulnerable = await calculateAndCompareSHA1(scriptsUsed[0].result[i], vulnerableSHA);
             if (isVulnerable) {
                 return true;
             }
@@ -70,7 +71,7 @@ const Popup = () => {
     // Handle fetchAndCheck
     React.useEffect(() => {
         const checkScripts = async () => {
-            const result = await fetchAndCheck(readScript);
+            const result = await fetchAndCheck();
             setIsVulnerable(result);
         };
         checkScripts();
@@ -87,5 +88,8 @@ const Popup = () => {
         </div>
     );
 };
+
+
+
 
 export default Popup;
