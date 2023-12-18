@@ -1,0 +1,14 @@
+{
+    "appName": {
+        "message": "Drainer Detector",
+        "description": "The name of the react extension."
+    },
+    "appDescription": {
+        "message": "Detects usage of vulnerable ledger connect-kit js files in a dapp.",
+        "description": "The description of the extension."
+    },
+    "btnTooltip": {
+        "message": "Drainer Detector",
+        "description": "Tooltip for the button."
+    }
+}
