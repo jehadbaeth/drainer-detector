@@ -1,7 +1,7 @@
 {
-    "name": "react-extension-boilerplate",
-    "version": "3.0.0",
-    "description": "Boilerplate for Chrome, FF, Opera extension",
+    "name": "drainer-detector",
+    "description": "Detects usage of vulnerable ledger connect-kit js files in a dapp.",
+    "version": "1.0.0",
     "main": "webpack.config.js",
     "scripts": {
         "dev:chrome": "cross-env NODE_ENV=development TARGET=chrome webpack",
@@ -24,7 +24,7 @@
         "upload": "yarn run upload:chrome && yarn run upload:firefox && yarn run upload:opera && yarn run upload:edge",
         "lint-fix": "eslint --ext js,jsx,ts,tsx, src --fix"
     },
-    "author": "Web Dev",
+    "author": "Jehad BAETH",
     "dependencies": {
         "autoprefixer": "^10.4.16",
         "clean-webpack-plugin": "^4.0.0",
